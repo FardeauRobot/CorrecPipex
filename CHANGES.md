@@ -1,8 +1,5 @@
 # CHANGES
 
-This file summarizes the main differences between `nvpipex` and `nvpipextim`.
-The goal is to explain what changed and why, in beginner-friendly terms.
-
 ## 1. Project Structure Refactor
 
 ### Before (`nvpipex`)
@@ -117,5 +114,7 @@ Petite explication pour mon parsing :
 		ec"ho" coucou est considéré comme : echo coucou
 
 	C'est un peu la les limites d'utiliser split. Certains utilisent un split modifié avec des flags, mais pour comprendre la suite du fonctionnement du shell ca devient plus hard. Dans tous les cas, et c'est ce que m'on dit certaines personnes quand je les corrigeais, te prends pas la tete a faire un parsing parfait pour pipex, la vraie valeur du projet est sur comprendre l'exécution via les redirections ( |, < ou > ) et les forks
+
+Comme dit aussi j'ai du changer ton printf pour gérer certains cas ou j'imprimais plusieurs variables dans le meme ft_printf(). J'ai l'impression que les pointeurs et leur utilisation ont encore quelques petits secrets a te partager. 
 
 L'exec reste a faire mais pour le moment ca me parait good. Encore une fois si t'as des galeres ou que t'as des questions, hésite pas. CA VA LE FAIRE 💪
