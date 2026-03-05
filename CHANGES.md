@@ -1,5 +1,8 @@
 # CHANGES
 
+This file summarizes the main differences between `nvpipex` and `nvpipextim`.
+The goal is to explain what changed and why, in beginner-friendly terms.
+
 ## 1. Project Structure Refactor
 
 ### Before (`nvpipex`)
@@ -98,6 +101,28 @@
 This transition is mostly a **codebase organization upgrade** plus a few **important type/field fixes**.
 The project is now in a better state to continue implementing the real `pipex` execution flow safely and clearly.
 
+## 8. `ft_printf` Adjustments Needed by `ft_matrix_print`
+
+### Context
+- In `nvpipextim`, debug output moved into helpers like `ft_matrix_print`.
+- `ft_matrix_print` prints multiple values in one call:
+- `ft_printf("[%s[%d] = %s]\n", type, i, matrix[i]);`
+
+### What changed (vs `nvpipex`)
+- `ft_specificator` now receives a pointer to the variadic state:
+- from `int ft_specificator(char *s, va_list list, int i);`
+- to `int ft_specificator(char *s, va_list *list, int i);`
+- In `ft_printf`, call changed from `ft_specificator(s, list, i)` to `ft_specificator(s, &list, i)`.
+- Inside `ft_specificator`, all reads became `va_arg(*list, ...)`.
+- `va_end(list)` is now called before returning from `ft_printf`.
+
+### Why we did this
+- The parser in `ft_printf` must consume arguments from one shared `va_list` state, in the exact order of `%` specifiers.
+- Passing `va_list` by value can be fragile depending on platform/ABI and can cause bad argument progression when several specifiers are used in one `ft_printf` call.
+- Passing `va_list` by pointer guarantees `ft_specificator` advances the same state owned by `ft_printf`.
+- This makes calls used by `ft_matrix_print` reliable (`%s`, `%d`, `%s` in one format string), and avoids mismatched outputs or undefined behavior.
+- `va_end` was added to properly close the variadic handling lifecycle.
+
 ## BRAVOOOOO
 
 T'as fait le plus gros au niveau du parsing.
@@ -115,6 +140,6 @@ Petite explication pour mon parsing :
 
 	C'est un peu la les limites d'utiliser split. Certains utilisent un split modifié avec des flags, mais pour comprendre la suite du fonctionnement du shell ca devient plus hard. Dans tous les cas, et c'est ce que m'ont dit certaines personnes quand je les corrigeais, te prends pas la tete a faire un parsing parfait pour pipex, la vraie valeur du projet est sur comprendre l'exécution via les redirections ( |, < ou > ) et les forks
 
-Comme dit aussi j'ai du changer ton printf pour gérer certains cas ou j'imprimais plusieurs variables dans le meme ft_printf(). J'ai l'impression que les pointeurs et leur utilisation ont encore quelques petits secrets a te partager. 
+Comme dit aussi j'ai du changer ton printf pour gérer certains cas ou j'imprimais plusieurs variables dans le meme ft_printf(), je n'ai pas revu ce que donne la norme dessus par contre donc attention a ca. J'ai l'impression que les pointeurs et leur utilisation ont encore quelques petits secrets a te partager. 
 
 L'exec reste a faire mais pour le moment ca me parait good. Encore une fois si t'as des galeres ou que t'as des questions, hésite pas. CA VA LE FAIRE 💪
