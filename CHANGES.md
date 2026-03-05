@@ -1,8 +1,5 @@
 # CHANGES
 
-This file summarizes the main differences between `nvpipex` and `nvpipextim`.
-The goal is to explain what changed and why, in beginner-friendly terms.
-
 ## 1. Project Structure Refactor
 
 ### Before (`nvpipex`)
