@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fardeau <fardeau@student.42.fr>            +#+  +:+       +#+        */
+/*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/04 21:18:11 by wissalhumea       #+#    #+#             */
-/*   Updated: 2026/03/05 12:27:06 by fardeau          ###   ########.fr       */
+/*   Updated: 2026/03/12 16:39:17 by wihumeau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,34 @@ void	free_tab(char **tab)
 {
 	int	i;
 
+	if (!tab)
+		return ;
 	i = 0;
-	while (tab[i])
+	while (tab[i] != NULL)
 	{
 		free(tab[i]);
 		i++;
 	}
 	free(tab);
+}
+
+void	free_paths(char *complete_cmd, char **path_tab)
+{
+	free(complete_cmd);
+	free_tab(path_tab);
+}
+
+void	freePipex(t_arg *pipex)
+{
+	free_tab(pipex->cmd1.args);
+	free_tab(pipex->cmd2.args);
+	free(pipex->cmd1.path);
+	free(pipex->cmd2.path);
+	free(pipex);
+}
+
+void	freeCmd(t_cmd *cmd)
+{
+	free(cmd->path); // invalid free child
+	free_tab(cmd->args); // invalid free child
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fardeau <fardeau@student.42.fr>            +#+  +:+       +#+        */
+/*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 17:37:34 by wissalhumea       #+#    #+#             */
-/*   Updated: 2026/03/05 12:27:06 by fardeau          ###   ########.fr       */
+/*   Updated: 2026/03/12 16:07:09 by wihumeau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,15 @@ char	**isolatepath(t_arg *pipex)
 	while (pipex->env[i])
 	{
 		len = ft_strlen(pipex->env[i]);
-		if (ft_strnstr(pipex->env[i], "PATH=/", len)) //"PATH=/home"
+		if (ft_strnstr(pipex->env[i], "PATH=/home", len)) //"PATH=/"
 		{
 			path_variable = ft_split(pipex->env[i], '=');
-			// if (path_variable == NULL)
-			// 	error_path(pipex);
+			if (path_variable == NULL)
+				return (NULL);
 			path_tab = ft_split(path_variable[1], ':');
-			// if (path_tab == NULL)
-			// {
-			// 	free_tab(path_variable);
-			// 	error_path(pipex);
-			// }
-			//free_tab(path_variable);
+			free_tab(path_variable);
+			if (path_tab == NULL)
+				return (NULL);
 			return (path_tab);
 		}
 		i++;
@@ -57,31 +54,38 @@ char	*findpath(char **cmd, t_arg *pipex)
 	if (!path_tab)
 		return (NULL);
 	complete_cmd = ft_strjoin("/", cmd[0]);
-	// if (complete_cmd == NULL)
-	// {
-	// 	free_tab(path_tab);
-	// 	error_path(pipex);
-	// }
+	if (complete_cmd == NULL)
+	{
+		free_tab(path_tab);
+		return (NULL);
+	}
 	while (path_tab[i])
 	{
 		cmd_path = ft_strjoin(path_tab[i], complete_cmd);
 		if (access(cmd_path, F_OK | X_OK) == 0)
 		{
-			//free_paths(&complete_cmd, &path_tab);
+			free_paths(complete_cmd, path_tab);
 			return (cmd_path);
 		}
 		free(cmd_path);
 		i++;
 	}
-	//free_paths(&complete_cmd, &path_tab);
+	free_paths(complete_cmd, path_tab);
 	return (NULL);
 }
 
 char	*assignpath(char **cmd, t_arg *pipex)
 {
-	if (cmd[0] == NULL)
+	char	*path;
+
+	if (!cmd || cmd[0] == NULL)
 		return (NULL);
 	if (access(cmd[0], F_OK | X_OK) == 0)
-		return (cmd[0]);
-	return(findpath(cmd, pipex));
+	{
+		path = ft_strdup(cmd[0]);
+		if (!path)
+			return (NULL);
+		return (path);
+	}
+	return (findpath(cmd, pipex));
 }

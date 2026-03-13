@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tibras <tibras@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/25 18:10:50 by wihumeau          #+#    #+#             */
+/*   Updated: 2026/03/13 16:45:23 by tibras           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 /*EXECUTION
@@ -53,84 +65,87 @@
 		ON ATT POUR LES 2 PROCESSUS DE SE TERMINER
 		ON AFFECTE A STATUS LA VALEUR DE RETOUR DE LA DERNIERE COMMANDE RECU PAR WAITPID
 		ON RETURN
+		*/
+
+/* CORRECTION EXEC
+
+	child
+faire une seule fonction child
+Le child 1 ecris dans le pipe[1] (2e case du tab)
+Le child 2 lis dans le pipe[0] (1e case du tab)
+utiliser un pointeur vers la structure cmd
+tjrs close avant de free
+pas besoin de condition pour execve
+utiliser closePipex pour TOUT close avant execve (les pipes n'etais pas close donc le child ne fini jamais, on wait dans le vide)
+
+	parent
+Modif la boucle waitpid pour recuperer uniquement le status du dernier child
+Macro qui verifi le status... Necessaire pour valider pipex ou peut attendre minishell??
+
+	general
+Verif si j'ai d'autres fonctions generique que je pourrais transformer en une
+Attention au utilisation de pointeur, notamment dans la fonction free_path, pas besoin de pointeur de pointeur de...
+/!\ TESTER CHAQUE FONCTION AVANT DE CONTINUER A CODER /!\
 */
 
-// int		child2(t_arg *pipex, int tab_pid[2])
-int		child2(t_arg *pipex)
+int		child(t_arg *pipex, t_cmd *cmd)
 {
-	pipex->cmd2.fdinput = pipex->pipe[0];
-	// TODO : ???
-	// if (pipex->cmd1.fdinput < 0 || pipex->cmd1.fdoutput < 0)
-	// {
-	// 	freePipex(pipex);
-		// close(pipex);
-	// 	exit(1); // exit code pour ce cas d'erreur???
-	// }
-	dup2(pipex->cmd2.fdinput, STDIN_FILENO);
-	dup2(pipex->cmd2.fdoutput, STDOUT_FILENO);
+	if (cmd->args == pipex->cmd1.args)
+		cmd->fdoutput = pipex->pipe[1];
+	if (cmd->args == pipex->cmd2.args)
+		cmd->fdinput = pipex->pipe[0];
+	if (cmd->fdinput < 0 || cmd->fdoutput < 0)
+	{
+		closePipex(pipex);
+		freePipex(pipex);
+		perror(Pipe);
+		exit(126);
+	}
+	dup2(cmd->fdinput, STDIN_FILENO);
+	dup2(cmd->fdoutput, STDOUT_FILENO);
 	closePipex(pipex);
-	execve(pipex->cmd2.path, pipex->cmd2.args, pipex->env);
+	execve(cmd->path, cmd->args, pipex->env);
+	perror(cmd->args[0]);
 	freePipex(pipex);
-	closeChild2(pipex);
-	exit(errno); // exit code pour ce cas dérreur???
-	// est ce que je dois return une valeur jsp comment je fait pour recup le status?
-}
 
-// int		child1(t_arg *pipex, int tab_pid[2])
-int		child1(t_arg *pipex)
-{
-	t_cmd *child;
-
-	child = &pipex->cmd1;
-	child->fdoutput = pipex->pipe[1];
-	// TODO : ???
-	// if (child->fdinput < 0 || child->fdoutput < 0)
-	// {
-	// 	freePipex(pipex);
-		// close(pipex);
-	// 	exit(1); // exit code pour ce cas d'erreur???
-	// }
-	dup2(child->fdinput, STDIN_FILENO);
-	close(child->fdinput);
-	dup2(child->fdoutput, STDOUT_FILENO);
-	close(child->fdoutput);
-	execve(child->path, child->args, pipex->env);
-	freePipex(pipex);
-	closeChild1(pipex);
-	exit(errno); // exit code pour ce cas dérreur???
-	// est ce que je dois return une valeur jsp comment je fait pour recup le status?
+	// MODIF VALEUR DE RETOUR
+	if (errno == EACCES)
+		exit(126);
+	exit(127);
 }
 
 void	exec(t_arg *pipex)
 {
-	int		j = 0;
+	int		pid;
 	int		tab_pid[2];
-	int 	status;
+	int		status;
+	int		exit_code;
 
-	// tab_pid[0] = -1;
-	// tab_pid[1] = -1;
-
-	if (pipe(pipex->pipe) == -1)
+	exit_code = 0;
+	tab_pid[0] = -1;
+	tab_pid[1] = -1;
+	if (pipe(pipex->pipe) < 0)
 	{
 		ft_printf("Pipex error, pipe creation : %s\n", strerror(errno));
-		freePipex(pipex);
 		closeFiles(pipex);
+		freePipex(pipex);
 		exit(1);
 	}
 	tab_pid[0] = fork();
 	if (tab_pid[0] == 0)
-		// child1(pipex, tab_pid);
-		child1(pipex);
+		child(pipex, &pipex->cmd1);
 	tab_pid[1] = fork();
 	if (tab_pid[1] == 0)
-		// child2(pipex, tab_pid);
-		child2(pipex);
+		child(pipex, &pipex->cmd2);
 	closePipex(pipex);
-	while (j <= 1)
-	{
-		waitpid(tab_pid[j], &status, 0);
-		j++;
-	}
 	freePipex(pipex);
-	exit(status);
+
+	// MODIF WAIT BOUCLE, SORRY J'AVAIS DU CHANGER CA
+	// ON PERD UN PROCESS SI ON ATT LE PREMIER PUIS LE 2EME
+	while ((pid = waitpid(-1, &status, 0)) != -1)
+	{
+		if (pid == tab_pid[1])
+			exit_code = WEXITSTATUS(status);
+	}
+	exit(exit_code);
 }

@@ -24,7 +24,7 @@ UTILS_DIR = src/utils/
 MAIN_FILES = main.c
 PARSING_FILES = parsing.c path.c
 EXEC_FILES = exec.c
-UTILS_FILES = free.c output.c utils.c
+UTILS_FILES = free.c output.c utils.c close.c
 
 # ===== Source / Object / Dependency Lists =====
 SRCS = \
@@ -70,7 +70,8 @@ test: $(NAME)
 	./$(NAME) Makefile ls wc tests/outfile
 
 hardtest: $(NAME)
-	./$(NAME) Makefile "ls -l -a" wc tests/outfile
+	r./$(NAME) Makefile "ls -l -a" "wc -l" tests/outfile
+	cat tests/outfile
 
 noinfile: $(NAME)
 	./$(NAME) Makefiled "ls -l -a" wc tests/outfile
