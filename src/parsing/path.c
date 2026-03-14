@@ -6,11 +6,11 @@
 /*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 17:37:34 by wissalhumea       #+#    #+#             */
-/*   Updated: 2026/03/12 16:07:09 by wihumeau         ###   ########.fr       */
+/*   Updated: 2026/03/13 21:56:42 by wihumeau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../../includes/pipex.h"
 
 char	**isolatepath(t_arg *pipex)
 {
@@ -24,7 +24,7 @@ char	**isolatepath(t_arg *pipex)
 	while (pipex->env[i])
 	{
 		len = ft_strlen(pipex->env[i]);
-		if (ft_strnstr(pipex->env[i], "PATH=/home", len)) //"PATH=/"
+		if (ft_strnstr(pipex->env[i], "PATH=/home", len))
 		{
 			path_variable = ft_split(pipex->env[i], '=');
 			if (path_variable == NULL)
@@ -55,18 +55,12 @@ char	*findpath(char **cmd, t_arg *pipex)
 		return (NULL);
 	complete_cmd = ft_strjoin("/", cmd[0]);
 	if (complete_cmd == NULL)
-	{
-		free_tab(path_tab);
-		return (NULL);
-	}
+		return (free_tab(path_tab), NULL);
 	while (path_tab[i])
 	{
 		cmd_path = ft_strjoin(path_tab[i], complete_cmd);
 		if (access(cmd_path, F_OK | X_OK) == 0)
-		{
-			free_paths(complete_cmd, path_tab);
-			return (cmd_path);
-		}
+			return (free_paths(complete_cmd, path_tab), cmd_path);
 		free(cmd_path);
 		i++;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fardeau <fardeau@student.42.fr>            +#+  +:+       +#+        */
+/*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/30 15:41:13 by wihumeau          #+#    #+#             */
-/*   Updated: 2026/03/04 23:25:05 by fardeau          ###   ########.fr       */
+/*   Updated: 2026/03/13 20:54:09 by wihumeau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,7 @@ int	ft_printf(const char *str, ...)
 	while (s[i])
 	{
 		if (s[i] != '%')
-		{
-			writen += ft_putchar(s[i]);
-			i++;
-		}
+			writen += ft_putchar(s[i++]);
 		else
 		{
 			i++;

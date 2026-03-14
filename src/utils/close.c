@@ -6,13 +6,13 @@
 /*   By: tibras <tibras@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 16:44:50 by wihumeau          #+#    #+#             */
-/*   Updated: 2026/03/13 16:08:18 by tibras           ###   ########.fr       */
+/*   Updated: 2026/03/14 17:50:51 by tibras           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../../includes/pipex.h"
 
-void	closePipex(t_arg *pipex)
+void	close_pipex(t_arg *pipex)
 {
 	if (pipex->cmd1.fdinput >= 0)
 		close(pipex->cmd1.fdinput);
@@ -24,7 +24,7 @@ void	closePipex(t_arg *pipex)
 		close(pipex->cmd2.fdoutput);
 }
 
-void	closeCmd(t_cmd *cmd)
+void	close_cmd(t_cmd *cmd)
 {
 	if (cmd->fdinput >= 0)
 		close(cmd->fdinput);
@@ -32,7 +32,7 @@ void	closeCmd(t_cmd *cmd)
 		close(cmd->fdoutput);
 }
 
-void	closeFiles(t_arg *pipex)
+void	close_files(t_arg *pipex)
 {
 	if (pipex->cmd1.fdinput >= 0)
 		close(pipex->cmd1.fdinput);

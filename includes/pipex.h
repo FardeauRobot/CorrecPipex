@@ -6,7 +6,7 @@
 /*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/12 20:42:46 by wihumeau          #+#    #+#             */
-/*   Updated: 2026/03/10 21:25:27 by wihumeau         ###   ########.fr       */
+/*   Updated: 2026/03/13 21:47:12 by wihumeau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_command
 // A MODIFIER -> s_arguments / t_arg = s_data / t_data ou s_pipex / t_pipex
 typedef struct s_arguments
 {
+	int		tab_pid[2];
 	char	*infile;
 	char	*outfile;
 	int		pipe[2];
@@ -69,14 +70,14 @@ int		child(t_arg *pipex, t_cmd *cmd);
 
 //Free.c
 void	free_tab(char **tab);
-void	free_paths(char *complete_cmd, char **path_tab); // pas necessaire le triple pointeur
-void	freePipex(t_arg *pipex);
-void	freeCmd(t_cmd *cmd);
+void	free_paths(char *complete_cmd, char **path_tab);
+void	free_pipex(t_arg *pipex);
+void	free_cmd(t_cmd *cmd);
 
 //Close.c
-void	closeFiles(t_arg *pipex);
-void	closePipex(t_arg *pipex);
-void	closeCmd(t_cmd *cmd);
+void	close_files(t_arg *pipex);
+void	close_pipex(t_arg *pipex);
+void	close_cmd(t_cmd *cmd);
 
 // OUTPUT.C
 void	ft_matrix_print(char **matrix, char *type);

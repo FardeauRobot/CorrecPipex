@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tibras <tibras@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 18:05:43 by wihumeau          #+#    #+#             */
-/*   Updated: 2026/03/13 15:48:23 by tibras           ###   ########.fr       */
+/*   Updated: 2026/03/13 21:48:55 by wihumeau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../includes/pipex.h"
 
 	// ON RECUPRERE LA LIGNE 
 	// SI ARGC != 5)
@@ -26,9 +26,11 @@ void	init(t_arg *pipex, char **env)
 	pipex->cmd2.fdoutput = -1;
 	pipex->pipe[0] = -1;
 	pipex->pipe[1] = -1;
+	pipex->tab_pid[0] = -1;
+	pipex->tab_pid[1] = -1;
 }
 
-int		main(int ac, char **av, char **env)
+int	main(int ac, char **av, char **env)
 {
 	t_arg	*pipex;
 
@@ -37,16 +39,18 @@ int		main(int ac, char **av, char **env)
 		return (1);
 	if (ac != 5)
 	{
+		free_pipex(pipex);
 		ft_printf("Expected ./pipex file1 cmd1 cmd2 file2\n");
-		return (1);
+		return (0);
 	}
 	init(pipex, env);
 	parsing(pipex, av);
-	// ft_printf("TEST DU PARSING\n\n");
+	exec(pipex);
+	return (0);
+}
+
+// ft_printf("TEST DU PARSING\n\n");
 	// ft_arg_print(pipex, 0);
 	// ft_cmd_print(&pipex->cmd1, 1);
 	// ft_cmd_print(&pipex->cmd2, 2);
 	// ft_printf("FIN DU TEST\n");
-	exec(pipex);
-	return (0);
-}

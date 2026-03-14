@@ -1,8 +1,20 @@
-#include "pipex.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   output.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wihumeau <wihumeau@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/13 21:02:05 by wihumeau          #+#    #+#             */
+/*   Updated: 2026/03/13 21:50:44 by wihumeau         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../includes/pipex.h"
 
 void	ft_matrix_print(char **matrix, char *type)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (matrix[i])

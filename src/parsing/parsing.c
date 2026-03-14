@@ -6,11 +6,11 @@
 /*   By: tibras <tibras@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 18:09:30 by wihumeau          #+#    #+#             */
-/*   Updated: 2026/03/13 16:02:41 by tibras           ###   ########.fr       */
+/*   Updated: 2026/03/14 17:31:48 by tibras           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../../includes/pipex.h"
 
 /*PARSING : 
 
@@ -63,22 +63,27 @@ char	**checkcmd(char *arg)
 		return (NULL);
 	if (access(arg, F_OK | X_OK) == 0)
 	{
-		cmd = malloc(sizeof(char *)* 2);
+		cmd = malloc(sizeof(char *) * 2);
 		if (!cmd)
 			return (NULL);
 		cmd[0] = ft_strdup(arg);
+		// FAUT PROTEGER LES MALLOCS
+		if (!cmd[0])
+			return (NULL);
 		cmd[1] = NULL;
 		return (cmd);
 	}
+	// POTENTIELLEMENT DEVOIR GERER LES ESPACES GENRE /t
 	cmd = ft_split(arg, ' ');
 	if (!cmd)
 		return (NULL);
 	return (cmd);
 }
 
-// SUR LES OPEN, BESOIN DE RENVOYER UN CODE ERREUR DE -1 CAR INFD = 2 ALORS QUE ERREUR
+// SUR LES OPEN, BESOIN DE RENVOYER UN CODE ERREUR 
+// DE -1 CAR INFD = 2 ALORS QUE ERREUR
 // SAME POUR INFILE
-int		openoutfile(char *file)
+int	openoutfile(char *file)
 {
 	int		fd;
 
@@ -91,7 +96,7 @@ int		openoutfile(char *file)
 	return (fd);
 }
 
-int		openinfile(char *file)
+int	openinfile(char *file)
 {
 	int		fd;
 

@@ -66,8 +66,13 @@ fclean: clean
 re: fclean all
 
 # ===== Test Helpers =====
+ARGS= Makefile ls wob tests/outfile
+
 test: $(NAME)
-	./$(NAME) Makefile ls wc tests/outfile
+	./$(NAME) $(ARGS)
+
+leaks: $(NAME)
+	valgrind --leak-check=full ./$(NAME) $(ARGS)
 
 hardtest: $(NAME)
 	r./$(NAME) Makefile "ls -l -a" "wc -l" tests/outfile
